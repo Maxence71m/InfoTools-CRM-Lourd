@@ -24,7 +24,7 @@ namespace SlamDunkApp
         // =========================================================
         private void ChargerDonnees()
         {
-            CmbClients.ItemsSource = bdd.GetClients();
+            CmbClients.ItemsSource = bdd.GetVraisClientsPourFacture();
             DtgProduitsDispo.ItemsSource = bdd.GetProduits();
         }
 

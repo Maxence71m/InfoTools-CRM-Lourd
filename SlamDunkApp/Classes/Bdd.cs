@@ -153,12 +153,46 @@ namespace SlamDunkApp
                                 Entreprise = reader.IsDBNull(reader.GetOrdinal("Entreprise")) ? null : reader.GetString("Entreprise"),
                                 Email = reader.GetString("Email"),
                                 Telephone = reader.GetString("Telephone"),
-                                Adresse = reader.GetString("Adresse")
+                                Adresse = reader.GetString("Adresse"),
+                                // ✅ Récupération du statut
+                                Statut = reader.IsDBNull(reader.GetOrdinal("Statut")) ? "Client" : reader.GetString("Statut")
                             });
                         }
                     }
                 }
                 catch (Exception ex) { MessageBox.Show("Erreur GetClients : " + ex.Message); }
+            }
+            return liste;
+        }
+        public List<Client> GetVraisClientsPourFacture()
+        {
+            List<Client> liste = new List<Client>();
+            using (MySqlConnection connection = new MySqlConnection(connectionString))
+            {
+                try
+                {
+                    connection.Open();
+                    string query = "SELECT * FROM Client WHERE Statut = 'Client' ORDER BY Nom ASC";
+                    MySqlCommand cmd = new MySqlCommand(query, connection);
+                    using (MySqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            liste.Add(new Client
+                            {
+                                IdClient = reader.GetInt32("IdClient"),
+                                Nom = reader.GetString("Nom"),
+                                Prenom = reader.GetString("Prenom"),
+                                Entreprise = reader.IsDBNull(reader.GetOrdinal("Entreprise")) ? null : reader.GetString("Entreprise"),
+                                Email = reader.GetString("Email"),
+                                Telephone = reader.GetString("Telephone"),
+                                Adresse = reader.GetString("Adresse"),
+                                Statut = reader.GetString("Statut")
+                            });
+                        }
+                    }
+                }
+                catch (Exception ex) { MessageBox.Show("Erreur : " + ex.Message); }
             }
             return liste;
         }
@@ -170,7 +204,8 @@ namespace SlamDunkApp
                 try
                 {
                     connection.Open();
-                    string query = "INSERT INTO Client (Nom, Prenom, Entreprise, Email, Telephone, Adresse) VALUES (@nom, @prenom, @ent, @email, @tel, @adr)";
+                    // ✅ Ajout du statut dans l'INSERT
+                    string query = "INSERT INTO Client (Nom, Prenom, Entreprise, Email, Telephone, Adresse, Statut) VALUES (@nom, @prenom, @ent, @email, @tel, @adr, @statut)";
                     MySqlCommand cmd = new MySqlCommand(query, connection);
                     cmd.Parameters.AddWithValue("@nom", c.Nom);
                     cmd.Parameters.AddWithValue("@prenom", c.Prenom);
@@ -178,6 +213,7 @@ namespace SlamDunkApp
                     cmd.Parameters.AddWithValue("@email", c.Email);
                     cmd.Parameters.AddWithValue("@tel", c.Telephone);
                     cmd.Parameters.AddWithValue("@adr", c.Adresse);
+                    cmd.Parameters.AddWithValue("@statut", string.IsNullOrEmpty(c.Statut) ? "Client" : c.Statut);
                     cmd.ExecuteNonQuery();
                     c.IdClient = (int)cmd.LastInsertedId;
 
@@ -196,7 +232,8 @@ namespace SlamDunkApp
                 try
                 {
                     connection.Open();
-                    string query = "UPDATE Client SET Nom=@nom, Prenom=@prenom, Entreprise=@ent, Email=@email, Telephone=@tel, Adresse=@adr WHERE IdClient=@id";
+                    // ✅ Ajout du statut dans l'UPDATE
+                    string query = "UPDATE Client SET Nom=@nom, Prenom=@prenom, Entreprise=@ent, Email=@email, Telephone=@tel, Adresse=@adr, Statut=@statut WHERE IdClient=@id";
                     MySqlCommand cmd = new MySqlCommand(query, connection);
                     cmd.Parameters.AddWithValue("@id", c.IdClient);
                     cmd.Parameters.AddWithValue("@nom", c.Nom);
@@ -205,6 +242,7 @@ namespace SlamDunkApp
                     cmd.Parameters.AddWithValue("@email", c.Email);
                     cmd.Parameters.AddWithValue("@tel", c.Telephone);
                     cmd.Parameters.AddWithValue("@adr", c.Adresse);
+                    cmd.Parameters.AddWithValue("@statut", string.IsNullOrEmpty(c.Statut) ? "Client" : c.Statut);
                     cmd.ExecuteNonQuery();
 
                     AjouterLog("UPDATE", "Client", c.IdClient.ToString(), ancien, c);
@@ -379,14 +417,13 @@ namespace SlamDunkApp
                 try
                 {
                     connection.Open();
+                    // ✅ Suppression de la jointure Prospect
                     string query = @"SELECT 
                                       r.IdRdv, r.Titre, r.Date_Heure, r.Lieu, r.IdClient,
-                                      c.Nom AS ClientNom, c.Prenom AS ClientPrenom,
-                                      p.Nom AS ProspectNom, p.Prenom AS ProspectPrenom,
+                                      c.Nom AS ClientNom, c.Prenom AS ClientPrenom, c.Statut AS ClientStatut,
                                       u.Nom AS UserNom, u.Prenom AS UserPrenom 
                                      FROM RendezVous r 
                                      LEFT JOIN Client c ON r.IdClient = c.IdClient 
-                                     LEFT JOIN Prospect p ON r.IdProspect = p.IdProspect
                                      LEFT JOIN Utilisateur u ON r.IdUtilisateur = u.Id
                                      WHERE r.Date_Heure BETWEEN @debut AND @fin";
 
@@ -401,11 +438,10 @@ namespace SlamDunkApp
                             string nomComplet = "Inconnu";
                             if (!reader.IsDBNull(reader.GetOrdinal("ClientNom")))
                             {
-                                nomComplet = reader.GetString("ClientNom") + " " + reader.GetString("ClientPrenom");
-                            }
-                            else if (!reader.IsDBNull(reader.GetOrdinal("ProspectNom")))
-                            {
-                                nomComplet = "PROSPECT: " + reader.GetString("ProspectNom") + " " + reader.GetString("ProspectPrenom");
+                                // ✅ Ajout du mot PROSPECT devant si c'est le cas
+                                string statut = reader.IsDBNull(reader.GetOrdinal("ClientStatut")) ? "" : reader.GetString("ClientStatut");
+                                string prefix = (statut == "Prospect") ? "PROSPECT: " : "";
+                                nomComplet = prefix + reader.GetString("ClientNom") + " " + reader.GetString("ClientPrenom");
                             }
 
                             string nomUser = "Non assigné";
@@ -569,7 +605,50 @@ namespace SlamDunkApp
         // =========================================================
         public int GetNombreClients() { return CountTable("Client"); }
         public int GetNombreProduits() { return CountTable("Produit"); }
-        public int GetNombreProspects() { return CountTable("Prospect"); }
+        public int GetNombreProspects()
+        {
+            try
+            {
+                using (MySqlConnection connection = new MySqlConnection(connectionString))
+                {
+                    connection.Open();
+                    // ✅ On compte dans la table Client
+                    string query = "SELECT COUNT(*) FROM Client WHERE Statut = 'Prospect'";
+                    MySqlCommand cmd = new MySqlCommand(query, connection);
+                    return Convert.ToInt32(cmd.ExecuteScalar());
+                }
+            }
+            catch { return 0; }
+        }
+
+        public List<Client> GetDerniersProspects() // ✅ Attention, ça renvoie une liste de Client maintenant !
+        {
+            List<Client> liste = new List<Client>();
+            using (MySqlConnection connection = new MySqlConnection(connectionString))
+            {
+                try
+                {
+                    connection.Open();
+                    // ✅ On sélectionne dans la table Client
+                    string query = "SELECT Nom, Prenom, Entreprise FROM Client WHERE Statut = 'Prospect' ORDER BY IdClient DESC LIMIT 10";
+                    MySqlCommand cmd = new MySqlCommand(query, connection);
+                    using (MySqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            liste.Add(new Client
+                            {
+                                Nom = reader.GetString("Nom"),
+                                Prenom = reader.GetString("Prenom"),
+                                Entreprise = reader.IsDBNull(reader.GetOrdinal("Entreprise")) ? "Particulier" : reader.GetString("Entreprise")
+                            });
+                        }
+                    }
+                }
+                catch { }
+            }
+            return liste;
+        }
         public int GetNombreRendezVous() { return CountTable("RendezVous"); }
 
         private int CountTable(string tableName)
@@ -587,33 +666,7 @@ namespace SlamDunkApp
             catch { return 0; }
         }
 
-        public List<Prospect> GetDerniersProspects()
-        {
-            List<Prospect> liste = new List<Prospect>();
-            using (MySqlConnection connection = new MySqlConnection(connectionString))
-            {
-                try
-                {
-                    connection.Open();
-                    string query = "SELECT Nom, Prenom, Entreprise FROM Prospect ORDER BY IdProspect DESC LIMIT 10";
-                    MySqlCommand cmd = new MySqlCommand(query, connection);
-                    using (MySqlDataReader reader = cmd.ExecuteReader())
-                    {
-                        while (reader.Read())
-                        {
-                            liste.Add(new Prospect
-                            {
-                                Nom = reader.GetString("Nom"),
-                                Prenom = reader.GetString("Prenom"),
-                                Entreprise = reader.IsDBNull(reader.GetOrdinal("Entreprise")) ? "Particulier" : reader.GetString("Entreprise")
-                            });
-                        }
-                    }
-                }
-                catch { }
-            }
-            return liste;
-        }
+       
 
         public List<RendezVous> GetProchainsRendezVous()
         {

@@ -16,14 +16,19 @@ namespace SlamDunkApp
         public string Telephone { get; set; } = string.Empty;
         public string Adresse { get; set; } = string.Empty;
 
+        public string Statut { get; set; } // Peut contenir "Prospect" ou "Client"
+
         // Propriété magique pour l'affichage dans la ComboBox
+        // Propriété magique pour l'affichage dans les listes
         public string NomComplet
         {
             get
             {
-                // Affiche "DUPONT Jean (Dupont SA)" ou juste "DUPONT Jean"
+                // Si c'est un prospect on met la cible, sinon on met le bonhomme
+                string prefix = Statut == "Prospect" ? "🎯 [PROSPECT]" : "👤 [CLIENT]";
+
                 string ste = string.IsNullOrEmpty(Entreprise) ? "" : $" ({Entreprise})";
-                return $"{Nom.ToUpper()} {Prenom}{ste}";
+                return $"{prefix} {Nom.ToUpper()} {Prenom}{ste}";
             }
         }
     }

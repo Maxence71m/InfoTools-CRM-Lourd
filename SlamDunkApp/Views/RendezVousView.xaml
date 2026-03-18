@@ -71,7 +71,7 @@
                 </ComboBox>
 
                 <Border Height="15"/>
-                <TextBlock Text="Client" Foreground="White" FontWeight="SemiBold" Margin="5,0,0,5"/>
+                <TextBlock Text="Client / Prospect" Foreground="White" FontWeight="SemiBold" Margin="5,0,0,5"/>
 
                 <ComboBox x:Name="CboClient" 
                           Height="40" 

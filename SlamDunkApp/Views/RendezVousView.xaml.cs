@@ -153,7 +153,7 @@ namespace SlamDunkApp
             Client c = (Client)CboClient.SelectedItem;
             int idUtilisateur = Convert.ToInt32(CboUtilisateur.SelectedValue);
             DateTime dateRdv = lundiEnCours.AddDays(CboJour.SelectedIndex).AddHours(CboHeure.SelectedIndex + 8);
-            string titre = "RDV Client: " + c.Nom;
+            string titre = $"RDV {c.Statut.ToUpper()} : {c.Nom}";
 
             Bdd bdd = new Bdd();
             if (!bdd.EstCreneauLibre(dateRdv))
@@ -177,7 +177,7 @@ namespace SlamDunkApp
             Client c = (Client)CboClient.SelectedItem;
             int idUtilisateur = Convert.ToInt32(CboUtilisateur.SelectedValue);
             DateTime dateRdv = lundiEnCours.AddDays(CboJour.SelectedIndex).AddHours(CboHeure.SelectedIndex + 8);
-            string titre = "RDV Client: " + c.Nom;
+            string titre = $"RDV {c.Statut.ToUpper()} : {c.Nom}";
 
             Bdd bdd = new Bdd();
             bdd.ModifierRdvBDD(_idRdvEnCoursDeModification.Value, c.IdClient, dateRdv, titre, idUtilisateur);

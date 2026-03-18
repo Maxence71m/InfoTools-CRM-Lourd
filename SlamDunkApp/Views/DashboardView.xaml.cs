@@ -52,7 +52,10 @@ namespace SlamDunkApp
             {
                 Bdd bdd = new Bdd();
                 // Remplissage des 3 petits tableaux en bas
+
+                // ✅ LA LIGNE MANQUANTE : On charge les prospects dans le DataGrid
                 DataGridProspects.ItemsSource = bdd.GetDerniersProspects();
+
                 DataGridRdv.ItemsSource = bdd.GetProchainsRendezVous();
                 DataGridProduitsDashboard.ItemsSource = bdd.GetProduitsDashboard();
             }

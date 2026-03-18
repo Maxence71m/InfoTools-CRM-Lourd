@@ -40,6 +40,7 @@ namespace SlamDunkApp
             txtEmail.IsReadOnly = true;
             txtTelephone.IsReadOnly = true;
             txtAdresse.IsReadOnly = true;
+            cmbStatut.IsEnabled = false; // ✅ ON BLOQUE LE STATUT
         }
 
         private void DeverrouillerChamps()
@@ -50,6 +51,7 @@ namespace SlamDunkApp
             txtEmail.IsReadOnly = false;
             txtTelephone.IsReadOnly = false;
             txtAdresse.IsReadOnly = false;
+            cmbStatut.IsEnabled = true; // ✅ ON DÉBLOQUE LE STATUT
         }
 
         private void ViderChamps()
@@ -60,6 +62,8 @@ namespace SlamDunkApp
             txtEmail.Text = "";
             txtTelephone.Text = "";
             txtAdresse.Text = "";
+            cmbStatut.SelectedIndex = -1; // ✅ ON VIDE LA SÉLECTION DU STATUT
+
         }
 
         // ========================= AJOUT =========================
@@ -80,6 +84,7 @@ namespace SlamDunkApp
                 "Mode Ajout", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
+        // ========================= SAUVEGARDER =========================
         // ========================= SAUVEGARDER =========================
         private void BtnSauvegarder_Click(object sender, RoutedEventArgs e)
         {
@@ -104,12 +109,14 @@ namespace SlamDunkApp
                 return;
             }
 
+            // 1. On affecte TOUTES les valeurs à clientEnCours (y compris le statut)
             clientEnCours.Nom = txtNom.Text;
             clientEnCours.Prenom = txtPrenom.Text;
             clientEnCours.Entreprise = txtEntreprise.Text;
             clientEnCours.Email = txtEmail.Text;
             clientEnCours.Telephone = txtTelephone.Text;
             clientEnCours.Adresse = txtAdresse.Text;
+            clientEnCours.Statut = cmbStatut.Text; // ✅ DÉPLACÉ ICI : valable pour l'ajout ET la modif
 
             try
             {
@@ -121,12 +128,14 @@ namespace SlamDunkApp
                 }
                 else if (isEditing && clientSelectionne != null)
                 {
+                    // 2. On met à jour le client original avec les nouvelles valeurs
                     clientSelectionne.Nom = clientEnCours.Nom;
                     clientSelectionne.Prenom = clientEnCours.Prenom;
                     clientSelectionne.Entreprise = clientEnCours.Entreprise;
                     clientSelectionne.Email = clientEnCours.Email;
                     clientSelectionne.Telephone = clientEnCours.Telephone;
                     clientSelectionne.Adresse = clientEnCours.Adresse;
+                    clientSelectionne.Statut = clientEnCours.Statut; // ✅ ON N'OUBLIE PAS DE METTRE À JOUR LE STATUT DU CLIENT SÉLECTIONNÉ
 
                     bdd.ModifierClient(clientSelectionne);
                     DtgClients.Items.Refresh();

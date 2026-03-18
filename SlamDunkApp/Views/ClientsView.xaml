@@ -91,6 +91,7 @@
                 <DataGrid x:Name="DtgClients" Grid.Row="1" Style="{StaticResource ClientGridStyle}"
                           SelectionChanged="DtgClients_SelectionChanged">
                     <DataGrid.Columns>
+                        <DataGridTextColumn Header="Statut" Binding="{Binding Statut}" Width="80" />
                         <DataGridTextColumn Header="Nom" Binding="{Binding Nom}" Width="*" />
                         <DataGridTextColumn Header="Prénom" Binding="{Binding Prenom}" Width="*" />
                         <DataGridTextColumn Header="Entreprise" Binding="{Binding Entreprise}" Width="*" />
@@ -124,29 +125,36 @@
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
 
-                            <TextBlock Grid.Row="0" Grid.Column="0" Text="Nom :" Margin="0,0,10,10" FontWeight="SemiBold" VerticalAlignment="Center"/>
-                            <TextBox x:Name="txtNom" Grid.Row="0" Grid.Column="1" Text="{Binding Nom, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,10" Background="White"/>
+                            <TextBlock Grid.Row="0" Grid.Column="0" Text="Statut :" Margin="0,0,10,10" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                            <ComboBox x:Name="cmbStatut" Grid.Row="0" Grid.Column="1" Text="{Binding Statut, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,10" Background="White">
+                                <ComboBoxItem Content="Client"/>
+                                <ComboBoxItem Content="Prospect"/>
+                            </ComboBox>
 
-                            <TextBlock Grid.Row="1" Grid.Column="0" Text="Prénom :" Margin="0,0,10,10" FontWeight="SemiBold" VerticalAlignment="Center"/>
-                            <TextBox x:Name="txtPrenom" Grid.Row="1" Grid.Column="1" Text="{Binding Prenom, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,10" Background="White"/>
+                            <TextBlock Grid.Row="1" Grid.Column="0" Text="Nom :" Margin="0,0,10,10" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                            <TextBox x:Name="txtNom" Grid.Row="1" Grid.Column="1" Text="{Binding Nom, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,10" Background="White"/>
 
-                            <TextBlock Grid.Row="2" Grid.Column="0" Text="Entreprise :" Margin="0,0,10,10" FontWeight="SemiBold" VerticalAlignment="Center"/>
-                            <TextBox x:Name="txtEntreprise" Grid.Row="2" Grid.Column="1" Text="{Binding Entreprise, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,10" Background="White"/>
+                            <TextBlock Grid.Row="2" Grid.Column="0" Text="Prénom :" Margin="0,0,10,10" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                            <TextBox x:Name="txtPrenom" Grid.Row="2" Grid.Column="1" Text="{Binding Prenom, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,10" Background="White"/>
 
-                            <TextBlock Grid.Row="3" Grid.Column="0" Text="Email :" Margin="0,0,10,10" FontWeight="SemiBold" VerticalAlignment="Center"/>
-                            <TextBox x:Name="txtEmail" Grid.Row="3" Grid.Column="1" Text="{Binding Email, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,10" Background="White"/>
+                            <TextBlock Grid.Row="3" Grid.Column="0" Text="Entreprise :" Margin="0,0,10,10" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                            <TextBox x:Name="txtEntreprise" Grid.Row="3" Grid.Column="1" Text="{Binding Entreprise, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,10" Background="White"/>
 
-                            <TextBlock Grid.Row="4" Grid.Column="0" Text="Téléphone :" Margin="0,0,10,10" FontWeight="SemiBold" VerticalAlignment="Center"/>
-                            <TextBox x:Name="txtTelephone" Grid.Row="4" Grid.Column="1" Text="{Binding Telephone, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,10" Background="White"/>
+                            <TextBlock Grid.Row="4" Grid.Column="0" Text="Email :" Margin="0,0,10,10" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                            <TextBox x:Name="txtEmail" Grid.Row="4" Grid.Column="1" Text="{Binding Email, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,10" Background="White"/>
 
-                            <TextBlock Grid.Row="5" Grid.Column="0" Text="Adresse :" Margin="0,0,10,10" FontWeight="SemiBold" VerticalAlignment="Top"/>
-                            <TextBox x:Name="txtAdresse" Grid.Row="5" Grid.Column="1" Text="{Binding Adresse, UpdateSourceTrigger=PropertyChanged}" Height="60" TextWrapping="Wrap" AcceptsReturn="True" Margin="0,0,0,10" Background="White"/>
+                            <TextBlock Grid.Row="5" Grid.Column="0" Text="Téléphone :" Margin="0,0,10,10" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                            <TextBox x:Name="txtTelephone" Grid.Row="5" Grid.Column="1" Text="{Binding Telephone, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,10" Background="White"/>
+
+                            <TextBlock Grid.Row="6" Grid.Column="0" Text="Adresse :" Margin="0,0,10,10" FontWeight="SemiBold" VerticalAlignment="Top"/>
+                            <TextBox x:Name="txtAdresse" Grid.Row="6" Grid.Column="1" Text="{Binding Adresse, UpdateSourceTrigger=PropertyChanged}" Height="60" TextWrapping="Wrap" AcceptsReturn="True" Margin="0,0,0,10" Background="White"/>
                         </Grid>
                     </ScrollViewer>
 
