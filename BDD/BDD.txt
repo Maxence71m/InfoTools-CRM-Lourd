@@ -1,0 +1,83 @@
+    • 👤 Utilisateur : Sert à la connexion. (Id, Nom, Prenom, Identifiant, MotDePasse).
+    • 🏢 Client : Les clients actuels de l'entreprise. (IdClient, Nom, Prenom, Entreprise, Email, Telephone, Adresse).
+    • 🎯 Prospect : Les clients potentiels (pas encore signés). Mêmes champs que Client (IdProspect, Nom, Prenom...).
+    • 📦 Produit : Le catalogue matériel/logiciel. (Id, Nom, Categorie, Prix, Stock).
+    • 📅 RendezVous : L'agenda des commerciaux. (IdRdv, Titre, Description, Date_Heure, Lieu). Cette table est reliée soit à un Prospect (IdProspect), soit à un Client (IdClient).
+    • 🕵️ Audit_Logs : L'historique de sécurité (pour ta mission 1). (id, action_date, user_login, action_type, table_name, record_id, old_value, new_value).
+
+-- ==========================================
+-- Création de la base de données InfoTools
+-- ==========================================
+CREATE DATABASE IF NOT EXISTS infotools;
+USE infotools;
+
+-- 1. Table Utilisateur
+CREATE TABLE IF NOT EXISTS utilisateur (
+  Id INT AUTO_INCREMENT PRIMARY KEY,
+  Nom VARCHAR(100) NOT NULL,
+  Prenom VARCHAR(100) NOT NULL,
+  Identifiant VARCHAR(50) NOT NULL UNIQUE,
+  MotDePasse VARCHAR(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- 2. Table Client
+CREATE TABLE IF NOT EXISTS client (
+  IdClient INT AUTO_INCREMENT PRIMARY KEY,
+  Nom VARCHAR(100) NOT NULL,
+  Prenom VARCHAR(100) NOT NULL,
+  Entreprise VARCHAR(150) DEFAULT NULL,
+  Email VARCHAR(150) NOT NULL,
+  Telephone VARCHAR(30) NOT NULL,
+  Adresse VARCHAR(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- 3. Table Prospect
+CREATE TABLE IF NOT EXISTS prospect (
+  IdProspect INT AUTO_INCREMENT PRIMARY KEY,
+  Nom VARCHAR(100) NOT NULL,
+  Prenom VARCHAR(100) NOT NULL,
+  Entreprise VARCHAR(150) DEFAULT NULL,
+  Email VARCHAR(150) NOT NULL,
+  Telephone VARCHAR(30) NOT NULL,
+  Adresse VARCHAR(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- 4. Table Produit
+CREATE TABLE IF NOT EXISTS produit (
+  Id INT AUTO_INCREMENT PRIMARY KEY,
+  Nom VARCHAR(150) NOT NULL,
+  Categorie VARCHAR(100) NOT NULL,
+  Prix DECIMAL(10,2) NOT NULL,
+  Stock INT NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- 5. Table Audit_Logs (Historique de sécurité)
+CREATE TABLE IF NOT EXISTS audit_logs (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  action_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  user_login VARCHAR(255) NOT NULL,
+  action_type ENUM('INSERT','UPDATE','DELETE') NOT NULL,
+  table_name VARCHAR(100) NOT NULL,
+  record_id VARCHAR(255) NOT NULL,
+  old_value LONGTEXT DEFAULT NULL,
+  new_value LONGTEXT DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- 6. Table RendezVous (Avec les bonnes clés étrangères)
+CREATE TABLE IF NOT EXISTS rendezvous (
+  IdRdv INT AUTO_INCREMENT PRIMARY KEY,
+  Titre VARCHAR(150) NOT NULL,
+  Description TEXT NOT NULL,
+  Date_Heure DATETIME NOT NULL,
+  Lieu VARCHAR(200) NOT NULL,
+  IdProspect INT DEFAULT NULL,
+  IdClient INT DEFAULT NULL,
+  
+  -- Clé étrangère vers la table Prospect
+  CONSTRAINT FK_Rdv_Prospect FOREIGN KEY (IdProspect) 
+    REFERENCES prospect(IdProspect) ON DELETE SET NULL ON UPDATE CASCADE,
+    
+  -- Clé étrangère vers la table Client (celle qu'il manquait !)
+  CONSTRAINT FK_Rdv_Client FOREIGN KEY (IdClient) 
+    REFERENCES client(IdClient) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
